@@ -42,12 +42,16 @@ enum Corner {
     BottomRight,
 }
 
-fn draw_diagonal_line(image: bmp::Image, start: Corner, color: Option<bmp::Pixel>) {
+fn draw_diagonal_line(image: bmp::Image, start: Option<Corner>, color: Option<bmp::Pixel>) {
     let color = match color {
         Some(c) => c,
         None => bmp::Pixel::new(255, 255, 255),
     };
     let len = image.get_width();
+    let start: Corner = match start {
+        Some(s) => s,
+        None => Corner::TopLeft,
+    };
     let x: u32 = match start {
         Corner::TopLeft => 0,
         Corner::TopRight => len - 1,
