@@ -4,7 +4,7 @@ use std::io::{stdout, Write};
 fn draw_pixel(path: &str) {
     let mut image = match bmp::open(path) {
         Ok(i) => i,
-        Err(_) => bmp::Image::new(100, 100)
+        Err(_) => bmp::Image::new(100, 100),
     };
 
     image.set_pixel(50, 50, bmp::Pixel::new(255, 255, 255));
@@ -28,6 +28,13 @@ fn draw_finnish_flag(path: &str) {
     image.save(path).expect("Image couldn't save");
 }
 
+fn read() -> String {
+    let mut op = String::new();
+    std::io::stdin().read_line(&mut op).unwrap();
+
+    op
+}
+
 fn main() {
     let path = std::env::args().nth(1).expect("You must provide a path.");
 
@@ -35,13 +42,35 @@ fn main() {
     // We use "flush" so that we see the question before the answer.
     // We can only use `flush` when we use `Write` too -- don't worry why yet!
     stdout().flush().unwrap();
-    let mut op = String::new();
-    std::io::stdin().read_line(&mut op).unwrap();
+
+    let op = read();
 
     match op.as_str() {
         "pixel\n" => draw_pixel(path.as_str()),
-        _ =>  {
-            eprintln!("The operation {op} was not recognised!");
+        "diagonal\n" => match read().as_str() {
+            "right\n" => todo!("diagonal right"),
+            "left\n" => todo!("diagonal left"),
+            _ => eprintln!("Expected left or right for diagonal"),
         },
+        "cross\n" => todo!("cross"),
+        "house\n" => todo!("house"),
+        "outline\n" => {
+            let coords = read();
+            let parts: Vec<_> = coords.split_whitespace().collect();
+            if parts.len() == 4 {
+                todo!("square outline")
+            } else {
+                eprintln!("Expected \"t l w h\" as coordinates to square outline")
+            }
+        }
+        "flag\n" => match read().as_str() {
+            "rainbow\n" => todo!("rainbow"),
+            "finland\n" => todo!("finland"),
+            "iceland\n" => todo!("iceland"),
+            "aboriginal\n" => todo!("aboriginal"),
+            _ => eprintln!("Expected rainbow | finland | iceland | aboriginal for diagonal"),
+        },
+        "sine\n" => todo!("sine"),
+        _ => eprintln!("The operation {op} was not recognised!"),
     }
 }
