@@ -91,27 +91,33 @@ enum Corner {
     BottomRight,
 }
 
-fn draw_diagonal_line(image: bmp::Image, start: Option<Corner>, color: Option<bmp::Pixel>) {
+fn draw_diagonal_line(image: bmp::Image, start: Option<Corner>, color: Option<bmp::Pixel>) -> Result<bmp::Image, String> {
+    if image.get_width() != image.get_height() {
+        return Err(String::from("Image is not square"));
+    }
+    if image.get_width() == 0 {
+        return Err(String::from("Image is empty"));
+    }
+
     let color = match color {
         Some(c) => c,
         None => bmp::Pixel::new(255, 255, 255),
     };
-    let len = image.get_width();
     let start: Corner = match start {
         Some(s) => s,
         None => Corner::TopLeft,
     };
     let x: u32 = match start {
         Corner::TopLeft => 0,
-        Corner::TopRight => len - 1,
+        Corner::TopRight => image.get_width() - 1,
         Corner::BottomLeft => 0,
-        Corner::BottomRight => len - 1,
+        Corner::BottomRight => image.get_width() - 1,
     };
     let y: u32 = match start {
         Corner::TopLeft => 0,
         Corner::TopRight => 0,
-        Corner::BottomLeft => len - 1,
-        Corner::BottomRight => len - 1,
+        Corner::BottomLeft => image.get_height() - 1,
+        Corner::BottomRight => image.get_height() - 1,
     };
     loop {
         if out_bounds(image, x, y) {
@@ -120,6 +126,7 @@ fn draw_diagonal_line(image: bmp::Image, start: Option<Corner>, color: Option<bm
         image.set_pixel(x, y, color);
         let (x, y) = diagonal_step(start, x, y);
     }
+    return Ok(image);
 }
 
 fn out_bounds(image: bmp::Image, x: u32, y: u32) -> bool {
