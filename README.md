@@ -12,3 +12,12 @@
 - [ ] "If f1 and f2 have the same dimensions; write to f1 a pixel-wise average of the two. Otherwise print an appropriate error message."
 - [ ] "If f1 and f2 ave te same dimensions; print the first row of the first; then the second row of the second, then the first row of the third." Copy f1 on top of f2. If f1 does not fit inside f2, print an appropriate error message
 -
+
+
+## Functions we need
+- [ ] File Opening
+- [ ] Draw Pixel
+- [ ] Draw line (horizontal)
+- [ ] Draw line (diagonal)
+- [ ] Draw line (start + end point)
+
