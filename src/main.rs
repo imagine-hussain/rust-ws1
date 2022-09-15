@@ -108,9 +108,11 @@ fn draw_rectangle(image: &mut bmp::Image, x: u32, y: u32, w: u32, h: u32, c: bmp
 }
 
 fn draw_finnish_flag(path: &str) {
-    let mut image = bmp::Image::new(110, 180);
+    let mut image = bmp::Image::new(180, 110);
 
-    draw_rectangle(&mut image, 0, 0, 110, 180, bmp::Pixel::new(0, 0, 255));
+    draw_rectangle(&mut image, 0, 0, 180, 110, bmp::Pixel::new(255, 255, 255));
+    draw_rectangle(&mut image, 50, 0, 80, 110, bmp::Pixel::new(0, 0, 255));
+    draw_rectangle(&mut image, 0, 40, 180, 70, bmp::Pixel::new(0, 0, 255));
 
     image.save(path).expect("Image couldn't save");
 }
