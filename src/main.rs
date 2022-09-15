@@ -18,8 +18,8 @@ fn draw_pixel_at_xy(image: &mut bmp::Image, x: u32, y: u32) {
 
 fn draw_outlined_square(path: &str, width: u32) {
     let mut image = match bmp::open(path) {
-        Ok(i) => i,
-        Err(_) => bmp::Image::new(width, width)
+        Ok(i) if i.get_width() == i.get_height() => i,
+        _ => bmp::Image::new(width, width)
     };
 
     fill_image(&mut image, bmp::Pixel::new(0, 0, 0));
@@ -44,8 +44,8 @@ fn fill_image(image: &mut bmp::Image, c: bmp::Pixel) {
 
 fn draw_filled_square(path: &str, width: u32, c: bmp::Pixel) {
     let mut image = match bmp::open(path) {
-        Ok(i) => i,
-        Err(_) => bmp::Image::new(width, width)
+        Ok(i) if i.get_width() == i.get_height() => i,
+        _ => bmp::Image::new(width, width)
     };
 
     fill_image(&mut image, c);
