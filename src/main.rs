@@ -12,6 +12,22 @@ fn draw_pixel(path: &str) {
     image.save(path).expect("This should save correctly.");
 }
 
+fn draw_rectangle(image: &mut bmp::Image, x: u32, y: u32, w: u32, h: u32, c: bmp::Pixel) {
+    for x_pixel in x..w {
+        for y_pixel in y..h {
+            image.set_pixel(x_pixel, y_pixel, c);
+        }
+    }
+}
+
+fn draw_finnish_flag(path: &str) {
+    let mut image = bmp::Image::new(110, 180);
+
+    draw_rectangle(&mut image, 0, 0, 110, 180, bmp::Pixel::new(0, 0, 255));
+
+    image.save(path).expect("Image couldn't save");
+}
+
 fn main() {
     let path = std::env::args().nth(1).expect("You must provide a path.");
 
