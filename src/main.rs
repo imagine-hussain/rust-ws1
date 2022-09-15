@@ -1,5 +1,5 @@
 use bmp;
-use std::io::{stdout, Write};
+use std:lio::{stdout, Write};
 
 fn draw_pixel(path: &str) {
     let mut image = match bmp::open(path) {
@@ -99,6 +99,13 @@ fn get_width() -> u32 {
     width
 }
 
+fn force_open(path: String) -> bmp::Image {
+    return match bmp::open(path) {
+        Ok(i) => i,
+        Err(_) => bmp::Image::new(100, 100),
+    }
+}
+
 fn draw_rectangle(image: &mut bmp::Image, x: u32, y: u32, w: u32, h: u32, c: bmp::Pixel) {
     for x_pixel in x..w {
         for y_pixel in y..h {
@@ -131,7 +138,8 @@ enum Corner {
     BottomRight,
 }
 
-fn draw_diagonal_line(image: bmp::Image, start: Option<Corner>, color: Option<bmp::Pixel>) -> Result<bmp::Image, String> {
+fn draw_diagonal_line(image_path: String, start: Option<Corner>, color: Option<bmp::Pixel>) -> Result<bmp::Image, String> {
+    let image = force_open(image_path);
     if image.get_width() != image.get_height() {
         return Err(String::from("Image is not square"));
     }
@@ -174,7 +182,7 @@ fn out_bounds(image: bmp::Image, x: u32, y: u32) -> bool {
     x <= 0 || x >= image.get_width() || y < 0 || y >= image.get_height()
 }
 
-fn diagonal_step(start, x, y) -> (u32, u32) {
+fn diagonal_step(start: Corner, x: u32, y: u32) -> (u32, u32) {
     // Increment for a diagonal step based on starting direction
     match start {
         Corner::TopLeft => (x + 1, y + 1),
@@ -205,8 +213,8 @@ fn main() {
             draw_filled_square(&path, width, bmp::Pixel::new(255, 255, 255));
         },
         "diagonal\n" => match read().as_str() {
-            "right\n" => todo!("diagonal right"),
-            "left\n" => todo!("diagonal left"),
+            "right\n" => draw_diagonal_line(path.as_str(), Some(Corner::TopRight), None),
+            "left\n" => draw_diagonal_line(path.as_str(), Some(Corner::TopLeft), None),
             _ => eprintln!("Expected left or right for diagonal"),
         },
         "cross\n" => todo!("cross"),
