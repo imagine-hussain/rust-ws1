@@ -12,6 +12,44 @@ fn draw_pixel(path: &str) {
     image.save(path).expect("This should save correctly.");
 }
 
+
+fn draw_x(path: &str) { 
+    let mut image = match bmp::open(path) {
+        Ok(i) => i,
+        Err(_) => bmp::Image::new(100, 100)
+    };
+    
+    for i in 0..100 {
+        image.set_pixel(i, i, bmp::Pixel::new(255, 255, 255));
+        image.set_pixel(i, 99 - i, bmp::Pixel::new(255, 255, 255));
+    }
+    image.save(path).expect("Image couldn't save");
+
+}
+
+
+fn draw_line(image: &mut bmp::Image, u_x: u32, u_y: u32, v_x: u32, v_y: u32, canvas: bmp::Pixel) {
+    let mut gradient = (v_y - u_y) / (v_x - u_x);
+    for x in u_x..v_x {
+        let y = gradient * (x - u_x) + u_y;
+        image.set_pixel(x, y, canvas);
+    }
+
+} 
+
+fn draw_house(path: &str) { 
+    let mut image = match bmp::open(path) {
+        Ok(i) => i,
+        Err(_) => bmp::Image::new(100, 100)
+    };
+
+    draw_rectangle(image, 0, 40, 100, 100, bmp::Pixel::new(255, 255, 255));
+    draw_rectangle(image, 20, 20, 80, 40, bmp::Pixel::new(255, 255, 255));
+    draw_line(image, 20, 20, 50, 0, bmp::Pixel::new(255, 255, 255));
+    draw_line(image, 50, 0, 80, 20, bmp::Pixel::new(255, 255, 255));
+}
+
+
 fn draw_pixel_at_xy(image: &mut bmp::Image, x: u32, y: u32) {
     image.set_pixel(x, y, bmp::Pixel::new(255, 255, 255));
 }
@@ -70,9 +108,11 @@ fn draw_rectangle(image: &mut bmp::Image, x: u32, y: u32, w: u32, h: u32, c: bmp
 }
 
 fn draw_finnish_flag(path: &str) {
-    let mut image = bmp::Image::new(110, 180);
+    let mut image = bmp::Image::new(180, 110);
 
-    draw_rectangle(&mut image, 0, 0, 110, 180, bmp::Pixel::new(0, 0, 255));
+    draw_rectangle(&mut image, 0, 0, 180, 110, bmp::Pixel::new(255, 255, 255));
+    draw_rectangle(&mut image, 50, 0, 80, 110, bmp::Pixel::new(0, 0, 255));
+    draw_rectangle(&mut image, 0, 40, 180, 70, bmp::Pixel::new(0, 0, 255));
 
     image.save(path).expect("Image couldn't save");
 }
