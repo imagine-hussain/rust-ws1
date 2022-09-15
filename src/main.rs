@@ -35,6 +35,56 @@ fn read() -> String {
     op
 }
 
+enum Corner {
+    TopLeft,
+    TopRight,
+    BottomLeft,
+    BottomRight,
+}
+
+fn draw_diagonal_line(image: bmp::Image, start: Corner, color: Option<bmp::Pixel>) {
+    let color = match color {
+        Some(c) => c,
+        None => bmp::Pixel::new(255, 255, 255),
+    };
+    let len = image.get_width();
+    let x: u32 = match start {
+        Corner::TopLeft => 0,
+        Corner::TopRight => len - 1,
+        Corner::BottomLeft => 0,
+        Corner::BottomRight => len - 1,
+    };
+    let y: u32 = match start {
+        Corner::TopLeft => 0,
+        Corner::TopRight => 0,
+        Corner::BottomLeft => len - 1,
+        Corner::BottomRight => len - 1,
+    };
+    loop {
+        if out_bounds(image, x, y) {
+            break;
+        }
+        image.set_pixel(x, y, color);
+        let (x, y) = diagonal_step(start, x, y);
+    }
+}
+
+fn out_bounds(image: bmp::Image, x: u32, y: u32) -> bool {
+    // ayo, no implicity bool cnversion?
+    x <= 0 || x >= image.get_width() || y < 0 || y >= image.get_height()
+}
+
+fn diagonal_step(start, x, y) -> (u32, u32) {
+    // Increment for a diagonal step based on starting direction
+    match start {
+        Corner::TopLeft => (x + 1, y + 1),
+        Corner::TopRight => (x - 1, y + 1),
+        Corner::BottomLeft => (x + 1, y - 1),
+        Corner::BottomRight => (x - 1, y - 1),
+    }
+}
+
+
 fn main() {
     let path = std::env::args().nth(1).expect("You must provide a path.");
 
