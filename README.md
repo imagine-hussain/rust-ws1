@@ -13,7 +13,7 @@ For each of the below, take in a file name (how you do this is your
 - [x] Draw a house shape.
 - [x] "Draw the outline of a square on a canvas. The width and coordnates of
       the square should be specified by the user."
-- [ ] "Draw a filled-in square on a canvas. The outline should be a different
+- [x] "Draw a filled-in square on a canvas. The outline should be a different
       colour to the filling."
 - [ ] Draw a 600x1000 rainbow flag across the entirety of a canvas.
 - [ ] Draw a 110x180pixel flag of Finland.

@@ -77,6 +77,18 @@ fn draw_filled_rectangle(path: String) {
     image.save(None).expect("This should save correctly.");
 }
 
+fn draw_japan(path: String) {
+    let mut image = new_canvas(path, 1980, 1080);
+    let white = bmp::Pixel { r: 255, g: 255, b: 255 };
+    let red = bmp::Pixel { r: 188, g: 0, b: 45 };
+    let start = Point { x: 0, y: 0 };
+    image.draw_filled_rectangle(start, image.width - 1, image.height - 1, Some(white), Some(white))
+        .expect("This should draw a rectangle");
+    image.fill_circle(image.get_centre(), 250, Some(red))
+        .expect("This should draw a circle");
+    image.save(None).expect("This should save correctly.");
+}
+
 fn main() {
     let path = std::env::args().nth(1).expect("You must provide a path.");
 
@@ -92,6 +104,7 @@ fn main() {
         "diagonals\n" => draw_diagonal_image(path),
         "outlined_square\n" => draw_outlined_square(path),
         "fill_rectangle\n" => draw_filled_rectangle(path),
+        "japan\n" => draw_japan(path),
         _ => {
             eprintln!("The operation {op} was not recognised!");
         }
@@ -177,6 +190,7 @@ enum CanvasError {
     InvalidPoint(String),
     InvalidPoints(String),
     OutBounds(Point),
+    InvalidRadius(u32),
 }
 
 impl Canvas {
@@ -208,6 +222,13 @@ impl Canvas {
         match self.image.save(path) {
             Ok(_) => Ok(()),
             Err(e) => Err(e),
+        }
+    }
+
+    fn get_centre(&self) -> Point {
+        Point {
+            x: self.width / 2,
+            y: self.height / 2,
         }
     }
 
@@ -326,4 +347,21 @@ impl Canvas {
         }
         self.draw_outlined_rectangle(start, height, width, outline)
     }
+
+    fn fill_circle(&mut self, centre: Point, radius: u32, color: Option<bmp::Pixel>) -> Result<(), CanvasError> {
+        if radius == 0 {
+            return Err(CanvasError::InvalidRadius(radius));
+        }
+
+        for i in centre.x - radius..centre.x + radius + 1 {
+            for j in centre.y - radius..centre.y + radius + 1 {
+                if (i - centre.x).pow(2) + (j - centre.y).pow(2) <= radius.pow(2) {
+                    self.draw_pixel(Point { x: i, y: j}, color)?;
+                }
+            }
+        }
+
+        Ok(())
+    }
 }
+
