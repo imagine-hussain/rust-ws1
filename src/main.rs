@@ -203,7 +203,8 @@ impl Canvas {
                 "Points must have the same x value",
             )));
         }
-        for i in p1.y..p2.y {
+        let (start, end) = if p1.y < p2.y { (p1, p2) } else { (p2, p2) };
+        for i in start.y..end.y + 1 {
             let p = Point { x: p1.x, y: i };
             self.draw_pixel(p, None).expect("Error drawing pixel");
         }
@@ -218,7 +219,8 @@ impl Canvas {
             )));
         }
         let y = p1.y;
-        for x in p1.x..p2.x {
+        let (start, end) = if p1.x < p2.x { (p1, p2) } else { (p2, p2) };
+        for x in start.x..end.x + 1 {
             let p = Point { x, y };
             self.draw_pixel(p, color).expect("Error drawing pixel");
         }
@@ -251,7 +253,7 @@ impl Canvas {
         let gradient = dy / dx;
 
         let mut j = start.y;
-        for i in start.x..end.x {
+        for i in start.x..end.x + 1 {
             self.draw_pixel(Point { x: i, y: j }, color)?;
             j = (gradient * (i - start.x) as f64 + start.y as f64) as u32;
         }
@@ -272,6 +274,7 @@ impl Canvas {
         let top_r = Point { x: start.x + width, y: start.y };
         let bot_l = Point { x: start.x, y: start.y + height };
         let bot_r = Point { x: start.x + width, y: start.y + height };
+        println!("Rec is on {:?}, {:?}, {:?}, {:?}", top_l, top_r, bot_l, bot_r);
         match self.draw_line(&top_l, &top_r, color) {
             Ok(_) => (),
             Err(e) => return Err(e),
@@ -280,11 +283,11 @@ impl Canvas {
             Ok(_) => (),
             Err(e) => return Err(e),
         }
-        match self.draw_line(&bot_r, &bot_l, color) {
+        match self.draw_line(&bot_l, &bot_r, color) {
             Ok(_) => (),
             Err(e) => return Err(e),
         }
-        match self.draw_line(&bot_l, &top_l, color) {
+        match self.draw_line(&top_l, &bot_l, color) {
             Ok(_) => (),
             Err(e) => return Err(e),
         }
