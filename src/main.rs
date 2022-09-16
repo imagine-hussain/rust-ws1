@@ -52,6 +52,16 @@ fn draw_diagonal_image(path: String) {
     image.save(None).expect("This should save correctly.");
 }
 
+fn draw_outlined_square(path: String) {
+    let pathc = path.clone();
+    let mut image = match open_canvas(path) {
+        Ok(image) => image,
+        Err(_) => new_canvas(pathc, 100, 100),
+    };
+    image.draw_outlined_square(Point { x: 10, y: 10 }, 20, None)
+        .expect("Error drawing square");
+}
+
 fn main() {
     let path = std::env::args().nth(1).expect("You must provide a path.");
 
@@ -65,6 +75,7 @@ fn main() {
     match op.as_str() {
         "pixel\n" => draw_pixel(path),
         "diagonals\n" => draw_diagonal_image(path),
+        "outlined_square" => draw_outlined_square(path),
         _ => {
             eprintln!("The operation {op} was not recognised!");
         }
@@ -198,7 +209,7 @@ impl Canvas {
         Ok(())
     }
 
-    fn draw_line_horizontal(&mut self, p1: Point, p2: Point) -> Result<(), CanvasError> {
+    fn draw_line_horizontal(&mut self, p1: &Point, p2: &Point, color: Option<bmp::Pixel>) -> Result<(), CanvasError> {
         // Horizontal line has fixed `y` value
         if p1.y != p2.y {
             return Err(CanvasError::InvalidPoint(String::from(
@@ -208,11 +219,10 @@ impl Canvas {
         let y = p1.y;
         for x in p1.x..p2.x {
             let p = Point { x, y };
-            self.draw_pixel(p, None).expect("Error drawing pixel");
+            self.draw_pixel(p, color).expect("Error drawing pixel");
         }
         Ok(())
     }
-
 
     fn draw_line(&mut self, p1: Point, p2: Point, color: Option<bmp::Pixel>) -> Result<(), crate::CanvasError> {
         // Increment along `x` values with gradient of y
@@ -226,7 +236,7 @@ impl Canvas {
             return self.draw_line_vertical(p1, p2);
         }
         if p1.y == p2.y {
-            return self.draw_line_horizontal(p1, p2);
+            return self.draw_line_horizontal(&p1, &p2, color);
         }
 
         let (start, end) = if p1.x < p2.x { (p1, p2) } else { (p2, p1) };
@@ -245,6 +255,14 @@ impl Canvas {
             j = (gradient * (i - start.x) as f64 + start.y as f64) as u32;
         }
 
+        Ok(())
+    }
+
+    fn draw_outlined_square(&mut self, start: Point, size: u32, color: Option<bmp::Pixel>) -> Result<(), CanvasError> {
+        match self.draw_line_horizontal(&start, &Point { x: start.x + size, y: start.y }, color) {
+            Ok(_) => (),
+            Err(e) => return Err(e),
+        };
         Ok(())
     }
 
