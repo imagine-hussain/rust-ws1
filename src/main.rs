@@ -10,7 +10,7 @@ struct Canvas {
     image: bmp::Image,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 struct Point {
     x: u32,
     y: u32,
@@ -45,9 +45,9 @@ fn draw_diagonal_image(path: String) {
         Ok(image) => image,
         Err(_) => new_canvas(pathc, 100, 100),
     };
-    image.draw_line(Point { x: 0, y: 0 }, Point { x: image.width - 1, y: image.height - 1}, None)
+    image.draw_line(&Point { x: 0, y: 0 }, &Point { x: image.width - 1, y: image.height - 1}, None)
         .expect("Error drawing diagonal line");
-    image.draw_line(Point { x: 0, y: image.height - 1}, Point { x: image.width - 1, y: 0 }, None)
+    image.draw_line(&Point { x: 0, y: image.height - 1}, &Point { x: image.width - 1, y: 0 }, None)
         .expect("Error drawing diagonal line");
     image.save(None).expect("This should save correctly.");
 }
@@ -195,7 +195,7 @@ impl Canvas {
         }
     }
 
-    fn draw_line_vertical(&mut self, p1: Point, p2: Point) -> Result<(), CanvasError> {
+    fn draw_line_vertical(&mut self, p1: &Point, p2: &Point) -> Result<(), CanvasError> {
         // Draw a line with a constant `x` value
         if p1.x != p2.x {
             return Err(CanvasError::InvalidPoint(String::from(
@@ -224,7 +224,7 @@ impl Canvas {
         Ok(())
     }
 
-    fn draw_line(&mut self, p1: Point, p2: Point, color: Option<bmp::Pixel>) -> Result<(), crate::CanvasError> {
+    fn draw_line(&mut self, p1: &Point, p2: &Point, color: Option<bmp::Pixel>) -> Result<(), crate::CanvasError> {
         // Increment along `x` values with gradient of y
         if self.out_bounds(&p1) {
             return Err(CanvasError::OutBounds(p1));
@@ -259,10 +259,26 @@ impl Canvas {
     }
 
     fn draw_outlined_square(&mut self, start: Point, size: u32, color: Option<bmp::Pixel>) -> Result<(), CanvasError> {
-        match self.draw_line_horizontal(&start, &Point { x: start.x + size, y: start.y }, color) {
+        let top_l = start;
+        let top_r = Point { x: start.x + size, y: start.y };
+        let bot_l = Point { x: start.x, y: start.y + size };
+        let bot_r = Point { x: start.x + size, y: start.y + size };
+        match self.draw_line(&top_l, &top_r, color) {
             Ok(_) => (),
             Err(e) => return Err(e),
-        };
+        }
+        match self.draw_line(&top_r, &bot_r, color) {
+            Ok(_) => (),
+            Err(e) => return Err(e),
+        }
+        match self.draw_line(&bot_r, &bot_l, color) {
+            Ok(_) => (),
+            Err(e) => return Err(e),
+        }
+        match self.draw_line(&bot_l, &top_l, color) {
+            Ok(_) => (),
+            Err(e) => return Err(e),
+        }
         Ok(())
     }
 
