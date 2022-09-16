@@ -63,6 +63,20 @@ fn draw_outlined_square(path: String) {
     image.save(None).expect("This should save correctly.");
 }
 
+fn draw_filled_rectangle(path: String) {
+    let pathc = path.clone();
+    let mut image = match open_canvas(path) {
+        Ok(image) => image,
+        Err(_) => new_canvas(pathc, 100, 100),
+    };
+    let start = Point { x: 10, y: 10 };
+    let outline = bmp::Pixel { r: 255, g: 0, b: 0 };
+    let fill = bmp::Pixel { r: 0, g: 0, b: 100 };
+    image.draw_filled_rectangle(start, 10, 20, Some(outline), Some(fill))
+        .expect("This should draw a rectangle");
+    image.save(None).expect("This should save correctly.");
+}
+
 fn main() {
     let path = std::env::args().nth(1).expect("You must provide a path.");
 
@@ -77,6 +91,7 @@ fn main() {
         "pixel\n" => draw_pixel(path),
         "diagonals\n" => draw_diagonal_image(path),
         "outlined_square\n" => draw_outlined_square(path),
+        "fill_rectangle\n" => draw_filled_rectangle(path),
         _ => {
             eprintln!("The operation {op} was not recognised!");
         }
@@ -196,7 +211,7 @@ impl Canvas {
         }
     }
 
-    fn draw_line_vertical(&mut self, p1: &Point, p2: &Point) -> Result<(), CanvasError> {
+    fn draw_line_vertical(&mut self, p1: &Point, p2: &Point, color: Option<bmp::Pixel>) -> Result<(), CanvasError> {
         // Draw a line with a constant `x` value
         if p1.x != p2.x {
             return Err(CanvasError::InvalidPoint(String::from(
@@ -206,7 +221,7 @@ impl Canvas {
         let (start, end) = if p1.y < p2.y { (p1, p2) } else { (p2, p2) };
         for i in start.y..end.y + 1 {
             let p = Point { x: p1.x, y: i };
-            self.draw_pixel(p, None).expect("Error drawing pixel");
+            self.draw_pixel(p, color).expect("Error drawing pixel");
         }
         Ok(())
     }
@@ -236,7 +251,7 @@ impl Canvas {
             return Err(CanvasError::OutBounds(*p2));
         }
         if p1.x == p2.x {
-            return self.draw_line_vertical(p1, p2);
+            return self.draw_line_vertical(p1, p2, color);
         }
         if p1.y == p2.y {
             return self.draw_line_horizontal(p1, p2, color);
@@ -244,12 +259,8 @@ impl Canvas {
 
         let (start, end) = if p1.x < p2.x { (p1, p2) } else { (p2, p1) };
 
-        println!("Drawing line from {:?} to {:?}", start, end);
         let dy: f64 = end.y as f64 - start.y as f64;
-        println!("done y");
         let dx: f64 = end.x as f64 - start.x as f64;
-        println!("done x");
-        println!("dy: {}, dx: {}", dy, dx);
         let gradient = dy / dx;
 
         let mut j = start.y;
@@ -270,11 +281,14 @@ impl Canvas {
     fn draw_outlined_rectangle(
         &mut self, start: Point, height: u32, width: u32, color: Option<bmp::Pixel>
     ) -> Result<(), CanvasError> {
+        if width == 0 || height == 0 {
+            return Ok(());
+        }
+
         let top_l = start;
         let top_r = Point { x: start.x + width, y: start.y };
         let bot_l = Point { x: start.x, y: start.y + height };
         let bot_r = Point { x: start.x + width, y: start.y + height };
-        println!("Rec is on {:?}, {:?}, {:?}, {:?}", top_l, top_r, bot_l, bot_r);
         match self.draw_line(&top_l, &top_r, color) {
             Ok(_) => (),
             Err(e) => return Err(e),
@@ -291,6 +305,23 @@ impl Canvas {
             Ok(_) => (),
             Err(e) => return Err(e),
         }
+        Ok(())
+    }
+
+    fn draw_filled_rectangle(
+        &mut self, start: Point, height: u32, width: u32, fill: Option<bmp::Pixel>, outline: Option<bmp::Pixel>
+    ) -> Result<(), CanvasError> {
+        if width == 0 || height == 0 {
+            return Ok(());
+        }
+        // Do fill before outline
+        for i in start.x..start.x + width + 1 {
+            for j in start.y..start.y + height + 1 {
+                let p = Point { x: i, y: j };
+                self.draw_pixel(p, fill)?;
+            }
+        }
+        self.draw_outlined_rectangle(start, height, width, outline);
         Ok(())
     }
 }

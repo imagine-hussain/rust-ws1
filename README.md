@@ -9,9 +9,9 @@ For each of the below, take in a file name (how you do this is your
 - [x] Draw a single pixel of any color, anywhere on the image.
 - [x] "Draw a diagonal line of any color, across one diagonal of a square
       canvas. Error if the canvas is not square."
-- [ ] Draw an X shape of any color, across the whole of a canvas.
-- [ ] Draw a house shape.
-- [ ] "Draw the outline of a square on a canvas. The width and coordnates of
+- [x] Draw an X shape of any color, across the whole of a canvas.
+- [x] Draw a house shape.
+- [x] "Draw the outline of a square on a canvas. The width and coordnates of
       the square should be specified by the user."
 - [ ] "Draw a filled-in square on a canvas. The outline should be a different
       colour to the filling."
