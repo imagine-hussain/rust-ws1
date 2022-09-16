@@ -45,9 +45,9 @@ fn draw_diagonal_image(path: String) {
         Ok(image) => image,
         Err(_) => new_canvas(pathc, 100, 100),
     };
-    image.draw_line(Point { x: 0, y: 0 }, Point { x: image.width - 1, y: image.height - 1})
+    image.draw_line(Point { x: 0, y: 0 }, Point { x: image.width - 1, y: image.height - 1}, None)
         .expect("Error drawing diagonal line");
-    image.draw_line(Point { x: 0, y: image.height - 1}, Point { x: image.width - 1, y: 0 })
+    image.draw_line(Point { x: 0, y: image.height - 1}, Point { x: image.width - 1, y: 0 }, None)
         .expect("Error drawing diagonal line");
     image.save(None).expect("This should save correctly.");
 }
@@ -214,7 +214,7 @@ impl Canvas {
     }
 
 
-    fn draw_line(&mut self, p1: Point, p2: Point) -> Result<(), crate::CanvasError> {
+    fn draw_line(&mut self, p1: Point, p2: Point, color: Option<bmp::Pixel>) -> Result<(), crate::CanvasError> {
         // Increment along `x` values with gradient of y
         if self.out_bounds(&p1) {
             return Err(CanvasError::OutBounds(p1));
@@ -241,7 +241,7 @@ impl Canvas {
 
         let mut j = start.y;
         for i in start.x..end.x {
-            self.draw_pixel(Point { x: i, y: j }, None)?;
+            self.draw_pixel(Point { x: i, y: j }, color)?;
             j = (gradient * (i - start.x) as f64 + start.y as f64) as u32;
         }
 

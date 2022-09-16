@@ -1,11 +1,16 @@
-- [ ] For each of the below, take in a file name (how you do this is your
+# Rust Workshop 1
+
+For each of the below, take in a file name (how you do this is your
       choice), and if it doesn't exist, create a bmp. If it does exist but
       isn't a valid BMP, return an error. If it does exist and is a BMP,
-      overwrite it." Draw a single pixel of any color, anywhere on the image.
-- [ ] "Draw a diagonal line of any color, across one diagonal of a square
+      overwrite it."
+
+## Tasks
+- [x] Draw a single pixel of any color, anywhere on the image.
+- [x] "Draw a diagonal line of any color, across one diagonal of a square
       canvas. Error if the canvas is not square."
-- [ ] Draw an X shape of any color, across the whole of a canvas. Draw a house
-      shape.
+- [ ] Draw an X shape of any color, across the whole of a canvas.
+- [ ] Draw a house shape.
 - [ ] "Draw the outline of a square on a canvas. The width and coordnates of
       the square should be specified by the user."
 - [ ] "Draw a filled-in square on a canvas. The outline should be a different
