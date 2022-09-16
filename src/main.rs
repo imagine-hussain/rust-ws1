@@ -318,10 +318,12 @@ impl Canvas {
         for i in start.x..start.x + width + 1 {
             for j in start.y..start.y + height + 1 {
                 let p = Point { x: i, y: j };
-                self.draw_pixel(p, fill)?;
+                match self.draw_pixel(p, fill) {
+                    Ok(_) => (),
+                    Err(e) => return Err(e),
+                }
             }
         }
-        self.draw_outlined_rectangle(start, height, width, outline);
-        Ok(())
+        self.draw_outlined_rectangle(start, height, width, outline)
     }
 }
