@@ -60,6 +60,7 @@ fn draw_outlined_square(path: String) {
     };
     image.draw_outlined_square(Point { x: 10, y: 10 }, 20, None)
         .expect("Error drawing square");
+    image.save(None).expect("This should save correctly.");
 }
 
 fn main() {
@@ -75,7 +76,7 @@ fn main() {
     match op.as_str() {
         "pixel\n" => draw_pixel(path),
         "diagonals\n" => draw_diagonal_image(path),
-        "outlined_square" => draw_outlined_square(path),
+        "outlined_square\n" => draw_outlined_square(path),
         _ => {
             eprintln!("The operation {op} was not recognised!");
         }
