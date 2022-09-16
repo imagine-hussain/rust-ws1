@@ -226,17 +226,17 @@ impl Canvas {
 
     fn draw_line(&mut self, p1: &Point, p2: &Point, color: Option<bmp::Pixel>) -> Result<(), crate::CanvasError> {
         // Increment along `x` values with gradient of y
-        if self.out_bounds(&p1) {
-            return Err(CanvasError::OutBounds(p1));
+        if self.out_bounds(p1) {
+            return Err(CanvasError::OutBounds(*p1));
         }
-        if self.out_bounds(&p2) {
-            return Err(CanvasError::OutBounds(p2));
+        if self.out_bounds(p2) {
+            return Err(CanvasError::OutBounds(*p2));
         }
         if p1.x == p2.x {
             return self.draw_line_vertical(p1, p2);
         }
         if p1.y == p2.y {
-            return self.draw_line_horizontal(&p1, &p2, color);
+            return self.draw_line_horizontal(p1, p2, color);
         }
 
         let (start, end) = if p1.x < p2.x { (p1, p2) } else { (p2, p1) };
@@ -258,11 +258,19 @@ impl Canvas {
         Ok(())
     }
 
-    fn draw_outlined_square(&mut self, start: Point, size: u32, color: Option<bmp::Pixel>) -> Result<(), CanvasError> {
+    fn draw_outlined_square(
+        &mut self, start: Point, size: u32, color: Option<bmp::Pixel>
+    ) -> Result <(), CanvasError> {
+        self.draw_outlined_rectangle(start, size, size, color)
+    }
+
+    fn draw_outlined_rectangle(
+        &mut self, start: Point, height: u32, width: u32, color: Option<bmp::Pixel>
+    ) -> Result<(), CanvasError> {
         let top_l = start;
-        let top_r = Point { x: start.x + size, y: start.y };
-        let bot_l = Point { x: start.x, y: start.y + size };
-        let bot_r = Point { x: start.x + size, y: start.y + size };
+        let top_r = Point { x: start.x + width, y: start.y };
+        let bot_l = Point { x: start.x, y: start.y + height };
+        let bot_r = Point { x: start.x + width, y: start.y + height };
         match self.draw_line(&top_l, &top_r, color) {
             Ok(_) => (),
             Err(e) => return Err(e),
@@ -281,5 +289,4 @@ impl Canvas {
         }
         Ok(())
     }
-
 }
