@@ -45,9 +45,28 @@ fn draw_diagonal_image(path: String) {
         Ok(image) => image,
         Err(_) => new_canvas(pathc, 100, 100),
     };
-    image.draw_line(&Point { x: 0, y: 0 }, &Point { x: image.width - 1, y: image.height - 1}, None)
+    image
+        .draw_line(
+            &Point { x: 0, y: 0 },
+            &Point {
+                x: image.width - 1,
+                y: image.height - 1,
+            },
+            None,
+        )
         .expect("Error drawing diagonal line");
-    image.draw_line(&Point { x: 0, y: image.height - 1}, &Point { x: image.width - 1, y: 0 }, None)
+    image
+        .draw_line(
+            &Point {
+                x: 0,
+                y: image.height - 1,
+            },
+            &Point {
+                x: image.width - 1,
+                y: 0,
+            },
+            None,
+        )
         .expect("Error drawing diagonal line");
     image.save(None).expect("This should save correctly.");
 }
@@ -58,7 +77,8 @@ fn draw_outlined_square(path: String) {
         Ok(image) => image,
         Err(_) => new_canvas(pathc, 100, 100),
     };
-    image.draw_outlined_square(Point { x: 10, y: 10 }, 20, None)
+    image
+        .draw_outlined_square(Point { x: 10, y: 10 }, 20, None)
         .expect("Error drawing square");
     image.save(None).expect("This should save correctly.");
 }
@@ -72,19 +92,36 @@ fn draw_filled_rectangle(path: String) {
     let start = Point { x: 10, y: 10 };
     let outline = bmp::Pixel { r: 255, g: 0, b: 0 };
     let fill = bmp::Pixel { r: 0, g: 0, b: 100 };
-    image.draw_filled_rectangle(start, 10, 20, Some(outline), Some(fill))
+    image
+        .draw_filled_rectangle(start, 10, 20, Some(outline), Some(fill))
         .expect("This should draw a rectangle");
     image.save(None).expect("This should save correctly.");
 }
 
 fn draw_japan(path: String) {
     let mut image = new_canvas(path, 1980, 1080);
-    let white = bmp::Pixel { r: 255, g: 255, b: 255 };
-    let red = bmp::Pixel { r: 188, g: 0, b: 45 };
+    let white = bmp::Pixel {
+        r: 255,
+        g: 255,
+        b: 255,
+    };
+    let red = bmp::Pixel {
+        r: 188,
+        g: 0,
+        b: 45,
+    };
     let start = Point { x: 0, y: 0 };
-    image.draw_filled_rectangle(start, image.width - 1, image.height - 1, Some(white), Some(white))
+    image
+        .draw_filled_rectangle(
+            start,
+            image.width - 1,
+            image.height - 1,
+            Some(white),
+            Some(white),
+        )
         .expect("This should draw a rectangle");
-    image.fill_circle(image.get_centre(), 250, Some(red))
+    image
+        .fill_circle(image.get_centre(), 250, Some(red))
         .expect("This should draw a circle");
     image.save(None).expect("This should save correctly.");
 }
@@ -232,7 +269,12 @@ impl Canvas {
         }
     }
 
-    fn draw_line_vertical(&mut self, p1: &Point, p2: &Point, color: Option<bmp::Pixel>) -> Result<(), CanvasError> {
+    fn draw_line_vertical(
+        &mut self,
+        p1: &Point,
+        p2: &Point,
+        color: Option<bmp::Pixel>,
+    ) -> Result<(), CanvasError> {
         // Draw a line with a constant `x` value
         if p1.x != p2.x {
             return Err(CanvasError::InvalidPoint(String::from(
@@ -247,7 +289,12 @@ impl Canvas {
         Ok(())
     }
 
-    fn draw_line_horizontal(&mut self, p1: &Point, p2: &Point, color: Option<bmp::Pixel>) -> Result<(), CanvasError> {
+    fn draw_line_horizontal(
+        &mut self,
+        p1: &Point,
+        p2: &Point,
+        color: Option<bmp::Pixel>,
+    ) -> Result<(), CanvasError> {
         // Horizontal line has fixed `y` value
         if p1.y != p2.y {
             return Err(CanvasError::InvalidPoint(String::from(
@@ -263,7 +310,12 @@ impl Canvas {
         Ok(())
     }
 
-    fn draw_line(&mut self, p1: &Point, p2: &Point, color: Option<bmp::Pixel>) -> Result<(), crate::CanvasError> {
+    fn draw_line(
+        &mut self,
+        p1: &Point,
+        p2: &Point,
+        color: Option<bmp::Pixel>,
+    ) -> Result<(), crate::CanvasError> {
         // Increment along `x` values with gradient of y
         if self.out_bounds(p1) {
             return Err(CanvasError::OutBounds(*p1));
@@ -294,22 +346,38 @@ impl Canvas {
     }
 
     fn draw_outlined_square(
-        &mut self, start: Point, size: u32, color: Option<bmp::Pixel>
-    ) -> Result <(), CanvasError> {
+        &mut self,
+        start: Point,
+        size: u32,
+        color: Option<bmp::Pixel>,
+    ) -> Result<(), CanvasError> {
         self.draw_outlined_rectangle(start, size, size, color)
     }
 
     fn draw_outlined_rectangle(
-        &mut self, start: Point, height: u32, width: u32, color: Option<bmp::Pixel>
+        &mut self,
+        start: Point,
+        height: u32,
+        width: u32,
+        color: Option<bmp::Pixel>,
     ) -> Result<(), CanvasError> {
         if width == 0 || height == 0 {
             return Ok(());
         }
 
         let top_l = start;
-        let top_r = Point { x: start.x + width, y: start.y };
-        let bot_l = Point { x: start.x, y: start.y + height };
-        let bot_r = Point { x: start.x + width, y: start.y + height };
+        let top_r = Point {
+            x: start.x + width,
+            y: start.y,
+        };
+        let bot_l = Point {
+            x: start.x,
+            y: start.y + height,
+        };
+        let bot_r = Point {
+            x: start.x + width,
+            y: start.y + height,
+        };
         match self.draw_line(&top_l, &top_r, color) {
             Ok(_) => (),
             Err(e) => return Err(e),
@@ -330,7 +398,12 @@ impl Canvas {
     }
 
     fn draw_filled_rectangle(
-        &mut self, start: Point, height: u32, width: u32, fill: Option<bmp::Pixel>, outline: Option<bmp::Pixel>
+        &mut self,
+        start: Point,
+        height: u32,
+        width: u32,
+        fill: Option<bmp::Pixel>,
+        outline: Option<bmp::Pixel>,
     ) -> Result<(), CanvasError> {
         if width == 0 || height == 0 {
             return Ok(());
@@ -348,7 +421,12 @@ impl Canvas {
         self.draw_outlined_rectangle(start, height, width, outline)
     }
 
-    fn fill_circle(&mut self, centre: Point, radius: u32, color: Option<bmp::Pixel>) -> Result<(), CanvasError> {
+    fn fill_circle(
+        &mut self,
+        centre: Point,
+        radius: u32,
+        color: Option<bmp::Pixel>,
+    ) -> Result<(), CanvasError> {
         if radius == 0 {
             return Err(CanvasError::InvalidRadius(radius));
         }
@@ -356,7 +434,7 @@ impl Canvas {
         for i in centre.x - radius..centre.x + radius + 1 {
             for j in centre.y - radius..centre.y + radius + 1 {
                 if (i - centre.x).pow(2) + (j - centre.y).pow(2) <= radius.pow(2) {
-                    self.draw_pixel(Point { x: i, y: j}, color)?;
+                    self.draw_pixel(Point { x: i, y: j }, color)?;
                 }
             }
         }
@@ -364,4 +442,3 @@ impl Canvas {
         Ok(())
     }
 }
-
